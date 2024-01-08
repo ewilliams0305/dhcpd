@@ -1,22 +1,22 @@
 package dhcpd
 
 const (
-  filePath string = "/etc/dhcp/dhcpd.conf"
+	filePath string = "/etc/dhcp/dhcpd.conf"
 )
 
 var config *DhcpConfig
 
 func saveFile() error {
-  return nil
+	return nil
 }
 
 func readFile() (*DhcpConfig, error) {
-  config = &DhcpConfig{}
-  return config, nil
+	config = &DhcpConfig{}
+	return config, nil
 }
 
-func (scope *DhcpScope) createScopeSection() (string, error){
-  return `
+func (scope *SubnetDeclaration) createScopeSection() (string, error) {
+	return `
   subnet 10.5.5.0 netmask 255.255.255.224 {
   range 10.5.5.26 10.5.5.30;
   option domain-name-servers ns1.internal.example.org;
@@ -25,5 +25,5 @@ func (scope *DhcpScope) createScopeSection() (string, error){
   option broadcast-address 10.5.5.31;
   default-lease-time 600;
   max-lease-time 7200;
-  }`
+  }`, nil
 }

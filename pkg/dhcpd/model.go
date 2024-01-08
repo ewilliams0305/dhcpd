@@ -22,6 +22,9 @@ type Lease struct {
 	IpAddress
 }
 
+// Represents a collection of static leases used by the server.
+type StaticLeases []Lease
+
 // Reresents a subnet declaration for an internal DHCP server LAN
 type SubnetDeclaration struct {
 	Subnet  IpAddress
@@ -36,4 +39,9 @@ type SubnetDeclaration struct {
 
 	DefaultLeaseTime LeaseTime
 	MaxLeaseTime     LeaseTime
+}
+
+type DhcpConfig struct {
+	subnet      *SubnetDeclaration
+	staticLease *StaticLeases
 }
