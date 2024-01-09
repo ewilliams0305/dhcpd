@@ -20,18 +20,22 @@ func reserveLease(lease Lease) tea.Cmd {
 	}
 }
 
+func readConfiguration() tea.Msg {
+	return DhcpConfig{}
+}
+
 func viewCurrentLeases() tea.Msg {
 	return make([]Lease, 0)
 }
 
 func stopDhcpServer() tea.Msg {
-
+	return false
 }
 
 func startDhcpServer() tea.Msg {
-
+	return false
 }
 
 func restartDhcpServer() tea.Msg {
-
+	return false
 }
