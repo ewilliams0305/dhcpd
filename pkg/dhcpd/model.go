@@ -12,7 +12,8 @@ type NetMask string
 // The fully qualified hostname of the device.
 type Hostname string
 
-type DhcpOptions
+type DhcpOptions struct {
+}
 
 // Duration for the lease
 type LeaseTime int
