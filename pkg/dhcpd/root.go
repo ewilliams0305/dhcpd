@@ -17,34 +17,21 @@ import (
 *********************************************************/
 
 type DhcpdViewModel struct {
-	list list.Model
-	err  error
-	help HelpModel
-	size tea.WindowSizeMsg
+	baner BannerModel
+	list  list.Model
+	err   error
+	help  HelpModel
+	size  tea.WindowSizeMsg
 }
-
-type listOption struct {
-	title, desc string
-}
-
-func (i listOption) Title() string       { return i.title }
-func (i listOption) Description() string { return i.desc }
-func (i listOption) FilterValue() string { return i.title }
 
 func InitialModel() *DhcpdViewModel {
 
 	w, h, _ := term.GetSize(int(os.Stdout.Fd()))
 
-	items := []list.Item{
-		listOption{title: "Subnet", desc: "configure the dhcp server subnet"},
-		listOption{title: "Reservation", desc: "create or edit dhcp reservations"},
-		listOption{title: "Status", desc: "displays the current system status"},
-		listOption{title: "Logs", desc: "view dhcp server logs and realtime information"},
-	}
-
 	app = &DhcpdViewModel{
-		list: list.New(items, list.NewDefaultDelegate(), 100, 20),
-		help: NewHelpModel(),
+		baner: NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, w),
+		list:  NewMainMenu(),
+		help:  NewHelpModel(),
 		size: tea.WindowSizeMsg{
 			Width:  w,
 			Height: h,
@@ -60,6 +47,28 @@ func (*DhcpdViewModel) Init() tea.Cmd {
 
 // Update implements tea.Model.
 func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+
+		}
+
+	case tickMsg:
+		w, h, _ := term.GetSize(int(os.Stdout.Fd()))
+		if w != m.size.Width || h != m.size.Height {
+			m.updateSize(w, h)
+		}
+		return m, tea.Batch(tick, func() tea.Msg { return tea.WindowSizeMsg{Width: w, Height: h} })
+
+	case tea.WindowSizeMsg:
+		m.updateSize(msg.Width, msg.Height)
+		return m, nil
+
+	case error:
+
+	}
+
 	var cmd tea.Cmd
 	m.list, cmd = m.list.Update(msg)
 	return m, cmd
@@ -67,8 +76,8 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View implements tea.Model.
 func (m *DhcpdViewModel) View() string {
-
-	s := docStyle.Render(m.list.View())
+	s := m.baner.View()
+	s += docStyle.Render(m.list.View())
 	s += "\n\n\n"
 	s += m.help.renderHelpInfo()
 	return s
