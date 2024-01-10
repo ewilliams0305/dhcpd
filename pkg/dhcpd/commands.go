@@ -33,14 +33,31 @@ func viewCurrentLeases() tea.Msg {
 	return make([]Lease, 0)
 }
 
-func stopDhcpServer() tea.Msg {
-	return false
-}
+func openJournal() tea.Cmd {
 
-func startDhcpServer() tea.Msg {
-	return false
+	c := exec.Command("journalctl", "-u", "virtualcontrol.service", "-f")
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		return journalClosedMessage{err}
+	})
 }
+func stopService() tea.Cmd {
 
-func restartDhcpServer() tea.Msg {
-	return false
+	c := exec.Command("systemctl", "stop", "virtualcontrol.service")
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		return serviceClosedMessage{err}
+	})
+}
+func startService() tea.Cmd {
+
+	c := exec.Command("systemctl", "start", "virtualcontrol.service")
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		return serviceClosedMessage{err}
+	})
+}
+func restartService() tea.Cmd {
+
+	c := exec.Command("systemctl", "restart", "virtualcontrol.service")
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		return serviceClosedMessage{err}
+	})
 }
