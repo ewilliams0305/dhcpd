@@ -1,5 +1,6 @@
 package dhcpd
 
 var (
-	app *DhcpdViewModel
+	app           *DhcpdViewModel
+	serviceStatus *ServiceStatus = &ServiceStatus{}
 )

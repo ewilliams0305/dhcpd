@@ -18,6 +18,7 @@ type helpKeyMap struct {
 	Stop    key.Binding
 	Restart key.Binding
 	Logs    key.Binding
+	Enter   key.Binding
 }
 
 func (k helpKeyMap) ShortHelp() []key.Binding {
@@ -63,6 +64,10 @@ var helpKeys = helpKeyMap{
 	Logs: key.NewBinding(
 		key.WithKeys("ctrl+l"),
 		key.WithHelp("ctrl+l", "display logs"),
+	),
+	Enter: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "select item"),
 	),
 }
 

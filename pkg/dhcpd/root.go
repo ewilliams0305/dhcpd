@@ -20,6 +20,7 @@ type DhcpdViewModel struct {
 	banner BannerModel
 	list   list.Model
 	help   HelpModel
+	status *ServiceStatus
 	size   tea.WindowSizeMsg
 }
 
@@ -29,6 +30,7 @@ func InitialModel() *DhcpdViewModel {
 
 	app = &DhcpdViewModel{
 		banner: NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, w),
+		status: serviceStatus,
 		list:   NewMainMenu(),
 		help:   NewHelpModel(),
 		size: tea.WindowSizeMsg{
@@ -41,7 +43,7 @@ func InitialModel() *DhcpdViewModel {
 
 // Init implements tea.Model.
 func (*DhcpdViewModel) Init() tea.Cmd {
-	return tea.Batch(tick, readConfiguration)
+	return tea.Batch(tick, serviceStatusCmd)
 }
 
 // Update implements tea.Model.
@@ -49,9 +51,28 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+
+		m.banner = NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, m.size.Width)
+
 		switch msg.String() {
-		case "down":
-			m.banner = NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, m.size.Width)
+		case "enter":
+
+			switch m.list.Index() {
+			case 0:
+				return m, tea.Batch(tick, serviceStatusCmd)
+			case 2:
+				return m, tea.Batch(tick, dhcpdServiceCmd(status))
+			case 3:
+				return m, tea.Batch(tick, dhcpdServiceCmd(start))
+			case 4:
+				return m, tea.Batch(tick, dhcpdServiceCmd(stop))
+			case 5:
+				return m, tea.Batch(tick, dhcpdServiceCmd(restart))
+			case 6:
+				return m, tea.Batch(tick, dhcpdServiceCmd(enable))
+			case 7:
+				return m, tea.Batch(tick, dhcpdServiceCmd(disable))
+			}
 		}
 
 	case tickMsg:
@@ -59,11 +80,19 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if w != m.size.Width || h != m.size.Height {
 			m.updateSize(w, h)
 		}
-		return m, tea.Batch(tick, func() tea.Msg { return tea.WindowSizeMsg{Width: w, Height: h} })
+		return m, tea.Batch(tick, serviceStatusCmd, func() tea.Msg { return tea.WindowSizeMsg{Width: w, Height: h} })
 
 	case tea.WindowSizeMsg:
 		m.updateSize(msg.Width, msg.Height)
 		return m, nil
+
+	case ActionResult:
+		if msg.err != nil {
+			m.banner = NewBanner(msg.err.Error(), BannerErrorState, m.banner.width)
+		}
+
+	case *ServiceStatus:
+		m.status = msg
 
 	case error:
 		m.banner = NewBanner(msg.Error(), BannerErrorState, m.banner.width)
@@ -78,6 +107,9 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *DhcpdViewModel) View() string {
 	s := m.banner.View()
 	s += docStyle.Render(m.list.View())
+
+	s += docStyle.Render(m.status.View())
+
 	s += "\n\n\n"
 	s += m.help.renderHelpInfo()
 	return s
@@ -85,7 +117,7 @@ func (m *DhcpdViewModel) View() string {
 
 /********************************************************
 *
-* INITIALIZE THE APP WITH FLAGS
+* START THE PROGRAM AND RUN THE TUI
 *
 *********************************************************/
 

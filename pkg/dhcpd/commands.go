@@ -42,9 +42,18 @@ func viewLogs() tea.Cmd {
 }
 
 // The dhcp service command is a tea.Cmd used to manipulate the state of the linux dhcpd.service
-func dhcpdServiceCmd(a *Action) tea.Cmd {
+func dhcpdServiceCmd(a Action) tea.Cmd {
 	c := exec.Command("systemctl", a.String(), "dhcpd.service")
 	return tea.ExecProcess(c, func(err error) tea.Msg {
-		return err
+		return a.Result(err)
 	})
+}
+
+func serviceStatusCmd() tea.Msg {
+	status, err := queryStatus()
+	if err != nil {
+		return err
+	}
+
+	return status
 }
