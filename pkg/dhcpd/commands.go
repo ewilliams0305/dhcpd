@@ -2,6 +2,7 @@ package dhcpd
 
 import (
 	"fmt"
+	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -33,31 +34,17 @@ func viewCurrentLeases() tea.Msg {
 	return make([]Lease, 0)
 }
 
-func openJournal() tea.Cmd {
-
-	c := exec.Command("journalctl", "-u", "virtualcontrol.service", "-f")
+func viewLogs() tea.Cmd {
+	c := exec.Command("journalctl", "-u", "dhcpd.service", "-f")
 	return tea.ExecProcess(c, func(err error) tea.Msg {
-		return journalClosedMessage{err}
+		return err
 	})
 }
-func stopService() tea.Cmd {
 
-	c := exec.Command("systemctl", "stop", "virtualcontrol.service")
+// The dhcp service command is a tea.Cmd used to manipulate the state of the linux dhcpd.service
+func dhcpdServiceCmd(a *Action) tea.Cmd {
+	c := exec.Command("systemctl", a.String(), "dhcpd.service")
 	return tea.ExecProcess(c, func(err error) tea.Msg {
-		return serviceClosedMessage{err}
-	})
-}
-func startService() tea.Cmd {
-
-	c := exec.Command("systemctl", "start", "virtualcontrol.service")
-	return tea.ExecProcess(c, func(err error) tea.Msg {
-		return serviceClosedMessage{err}
-	})
-}
-func restartService() tea.Cmd {
-
-	c := exec.Command("systemctl", "restart", "virtualcontrol.service")
-	return tea.ExecProcess(c, func(err error) tea.Msg {
-		return serviceClosedMessage{err}
+		return err
 	})
 }
