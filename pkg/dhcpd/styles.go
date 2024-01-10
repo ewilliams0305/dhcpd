@@ -13,7 +13,7 @@ const (
 var (
 	docStyle = lipgloss.NewStyle().Margin(1, 2)
 
-	banerNormalStyle = lipgloss.NewStyle().
+	bannerNormalStyle = lipgloss.NewStyle().
 				Bold(true).
 				Foreground(lipgloss.Color(PrimaryLight)).
 				Background(lipgloss.Color(PrimaryDark)).
@@ -22,12 +22,12 @@ var (
 				MarginBottom(1).
 				Align(lipgloss.Center)
 
-	banerErrorStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(lipgloss.Color(PrimaryLight)).
-			Background(lipgloss.Color(ErrorColor)).
-			PaddingTop(1).
-			PaddingLeft(1).
-			MarginBottom(1).
-			Align(lipgloss.Center)
+	bannerErrorStyle = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color(PrimaryLight)).
+				Background(lipgloss.Color(ErrorColor)).
+				PaddingTop(1).
+				PaddingLeft(1).
+				MarginBottom(1).
+				Align(lipgloss.Center)
 )

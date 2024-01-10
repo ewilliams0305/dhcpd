@@ -17,11 +17,10 @@ import (
 *********************************************************/
 
 type DhcpdViewModel struct {
-	baner BannerModel
-	list  list.Model
-	err   error
-	help  HelpModel
-	size  tea.WindowSizeMsg
+	banner BannerModel
+	list   list.Model
+	help   HelpModel
+	size   tea.WindowSizeMsg
 }
 
 func InitialModel() *DhcpdViewModel {
@@ -29,9 +28,9 @@ func InitialModel() *DhcpdViewModel {
 	w, h, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	app = &DhcpdViewModel{
-		baner: NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, w),
-		list:  NewMainMenu(),
-		help:  NewHelpModel(),
+		banner: NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, w),
+		list:   NewMainMenu(),
+		help:   NewHelpModel(),
 		size: tea.WindowSizeMsg{
 			Width:  w,
 			Height: h,
@@ -51,7 +50,8 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-
+		case "down":
+			m.banner = NewBanner("CONFIGURE YOUR DHCP SERVER", BannerNormalState, m.size.Width)
 		}
 
 	case tickMsg:
@@ -66,7 +66,7 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case error:
-
+		m.banner = NewBanner(msg.Error(), BannerErrorState, m.banner.width)
 	}
 
 	var cmd tea.Cmd
@@ -76,7 +76,7 @@ func (m *DhcpdViewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View implements tea.Model.
 func (m *DhcpdViewModel) View() string {
-	s := m.baner.View()
+	s := m.banner.View()
 	s += docStyle.Render(m.list.View())
 	s += "\n\n\n"
 	s += m.help.renderHelpInfo()

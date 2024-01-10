@@ -1,6 +1,10 @@
 package dhcpd
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	"fmt"
+
+	tea "github.com/charmbracelet/bubbletea"
+)
 
 // Configures the dhcp scope for the dhcp server
 // The dhcp server will restart when this command is invoked
@@ -21,7 +25,8 @@ func reserveLease(lease Lease) tea.Cmd {
 }
 
 func readConfiguration() tea.Msg {
-	return DhcpConfig{}
+	//return DhcpConfig{}
+	return fmt.Errorf("TESTING FAILED BANNER RETURNED FROM COMMAND")
 }
 
 func viewCurrentLeases() tea.Msg {

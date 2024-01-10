@@ -48,11 +48,11 @@ func (m BannerModel) View() string {
 
 func renderBanner(model BannerModel) string {
 	if model.state == BannerNormalState {
-		return banerNormalStyle.
+		return bannerNormalStyle.
 			Width(model.width).
 			Render(model.message + "\n")
 	}
-	return banerErrorStyle.
+	return bannerErrorStyle.
 		Width(model.width).
 		Render(model.message + "\n")
 }

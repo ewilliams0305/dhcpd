@@ -18,5 +18,7 @@ func NewMainMenu() list.Model {
 		listOption{title: "Logs", desc: "view dhcp server logs and realtime information"},
 	}
 
-	return list.New(items, list.NewDefaultDelegate(), 100, 20)
+	list := list.New(items, list.NewDefaultDelegate(), 100, 20)
+	list.Title = "Select an option below to conifgure your dhcpd service"
+	return list
 }
